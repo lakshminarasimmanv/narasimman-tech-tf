@@ -202,65 +202,65 @@ resource "aws_eip_association" "eip_assoc" {
 ## Elastic Load Balancer
 
 ### Load Balancer Configuration
-resource "aws_lb" "main" {
-  name               = var.elb_name
-  internal           = false
-  load_balancer_type = var.elb_type
-  security_groups    = [module.vpc.sg_allow_http, module.vpc.sg_allow_tls]
-  subnets            = ["${module.vpc.public_subnets[0]}", "${module.vpc.public_subnets[1]}"]
+# resource "aws_lb" "main" {
+#   name               = var.elb_name
+#   internal           = false
+#   load_balancer_type = var.elb_type
+#   security_groups    = [module.vpc.sg_allow_http, module.vpc.sg_allow_tls]
+#   subnets            = ["${module.vpc.public_subnets[0]}", "${module.vpc.public_subnets[1]}"]
 
-  tags = {
-    Env = "production"
+#   tags = {
+#     Env = "production"
 
-    Usage = "Narasimman Tech"
-  }
-}
+#     Usage = "Narasimman Tech"
+#   }
+# }
 
 ### Target Group Configuration
-resource "aws_lb_target_group" "main" {
-  name     = var.elb_tg_name
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = module.vpc.vpc_id
-}
+# resource "aws_lb_target_group" "main" {
+#   name     = var.elb_tg_name
+#   port     = 80
+#   protocol = "HTTP"
+#   vpc_id   = module.vpc.vpc_id
+# }
 
 ### Target Group Attachment
-resource "aws_lb_target_group_attachment" "main" {
-  target_group_arn = aws_lb_target_group.main.arn
-  target_id        = aws_instance.site.id
-  port             = 80
-}
+# resource "aws_lb_target_group_attachment" "main" {
+#   target_group_arn = aws_lb_target_group.main.arn
+#   target_id        = aws_instance.site.id
+#   port             = 80
+# }
 
 ### Target Group Listener
 #### Redirect 80 ---> 443
-resource "aws_lb_listener" "listerner_http" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
+# resource "aws_lb_listener" "listerner_http" {
+#   load_balancer_arn = aws_lb.main.arn
+#   port              = "80"
+#   protocol          = "HTTP"
 
-  default_action {
-    type = "redirect"
+#   default_action {
+#     type = "redirect"
 
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
+#     redirect {
+#       port        = "443"
+#       protocol    = "HTTPS"
+#       status_code = "HTTP_301"
+#     }
+#   }
+# }
 
 #### Listening on 443
-resource "aws_lb_listener" "listerner_https" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.cert.arn
+# resource "aws_lb_listener" "listerner_https" {
+#   load_balancer_arn = aws_lb.main.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   certificate_arn   = aws_acm_certificate.cert.arn
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
-  }
-}
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.main.arn
+#   }
+# }
 
 ### Listener Certificate Configuration
 # resource "aws_lb_listener_certificate" "cert" {
@@ -407,42 +407,42 @@ resource "aws_ses_domain_mail_from" "example" {
 
 # ---------------------------------------
 ## AWS ACM Certificate
-resource "aws_acm_certificate" "cert" {
-  domain_name       = var.domain_name
-  validation_method = "DNS"
+# resource "aws_acm_certificate" "cert" {
+#   domain_name       = var.domain_name
+#   validation_method = "DNS"
 
-  validation_option {
-    domain_name       = var.domain_name
-    validation_domain = var.domain_name
-  }
+#   validation_option {
+#     domain_name       = var.domain_name
+#     validation_domain = var.domain_name
+#   }
 
-  tags = {
-    Environment = "test"
-  }
+#   tags = {
+#     Environment = "test"
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 # ---------------------------------------
 ## Cloudflare Configuration
 
 # Update Domain IP
-# resource "cloudflare_record" "narasimmantech_eip" {
-#   zone_id = var.cloudflare_zone_id
-#   name    = var.domain_name
-#   value   = aws_eip.lb.public_ip
-#   proxied = false
-#   type    = "A"
-# }
-
-resource "cloudflare_record" "narasimmantech-lb" {
+resource "cloudflare_record" "narasimmantech_eip" {
   zone_id = var.cloudflare_zone_id
   name    = var.domain_name
-  value   = aws_lb.main.dns_name
-  type    = "CNAME"
+  value   = aws_eip.lb.public_ip
+  proxied = false
+  type    = "A"
 }
+
+# resource "cloudflare_record" "narasimmantech-lb" {
+#   zone_id = var.cloudflare_zone_id
+#   name    = var.domain_name
+#   value   = aws_lb.main.dns_name
+#   type    = "CNAME"
+# }
 
 resource "cloudflare_record" "narasimman-tech-record" {
   zone_id = var.cloudflare_zone_id
@@ -478,21 +478,21 @@ resource "cloudflare_record" "narasimman-tech-record-4" {
   ttl     = "600"
 }
 
-resource "cloudflare_record" "domain_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
+# resource "cloudflare_record" "domain_validation" {
+#   for_each = {
+#     for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+#       name   = dvo.resource_record_name
+#       record = dvo.resource_record_value
+#       type   = dvo.resource_record_type
+#     }
+#   }
 
-  zone_id = var.cloudflare_zone_id
-  name    = each.value.name
-  value   = each.value.record
-  type    = each.value.type
+#   zone_id = var.cloudflare_zone_id
+#   name    = each.value.name
+#   value   = each.value.record
+#   type    = each.value.type
 
-  depends_on = [
-    aws_acm_certificate.cert
-  ]
-}
+#   depends_on = [
+#     aws_acm_certificate.cert
+#   ]
+# }
