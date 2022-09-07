@@ -176,3 +176,10 @@ variable "rds_snapshot_identifier" {
   sensitive   = true
   default     = ""
 }
+
+variable "cloudfront_oai" {
+  description = "Cloudfront Origin Access Identity"
+  type        = string
+  sensitive   = true
+  default     = ""
+}

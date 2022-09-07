@@ -1,6 +1,6 @@
 ## Data Sources
 data "aws_cloudfront_origin_access_identity" "oai" {
-  id = "EET1GZDUV9TKI"
+  id = var.cloudfront_oai
 }
 
 # ---------------------------------------
