@@ -1,0 +1,78 @@
+---
+- name: Install Docker, Docker Compose and Init Docker Swarm
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Remove Pre installed Docker Components
+      ansible.builtin.apt:
+        pkg:
+          - docker 
+          - docker-engine 
+          - docker.io 
+          - containerd 
+          - runc
+        state: absent
+
+    - name: Install required system packages
+      ansible.builtin.apt:
+        pkg:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - virtualenv
+        state: present
+        update_cache: true
+
+    - name: Install apt gpg key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add specified repository into sources list
+      ansible.builtin.apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+
+    - name: Install Docker Engine
+      ansible.builtin.apt:
+        pkg:
+          - docker-ce 
+          - docker-ce-cli 
+          - containerd.io
+          - docker-compose-plugin
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      ansible.builtin.pip:
+        name: docker
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+
+    - name: Add user to docker group user
+      ansible.builtin.user:
+        name : "ubuntu"
+        group : "docker"
+        state : present
+
+    - name: Init a new swarm with default parameters
+      docker_swarm:
+        state: present
+
+    - name: Create an overlay network
+      docker_network:
+        name: proxy
+        driver: overlay
+        attachable: true
+        state: present

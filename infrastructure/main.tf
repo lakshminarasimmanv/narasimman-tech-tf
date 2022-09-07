@@ -14,11 +14,12 @@ resource "random_pet" "name" {
 module "vpc" {
   source = "github.com/lakshminarasimmanv/terraform-aws-vpc-module"
 
-  cidr            = var.cidr
-  name            = "${var.name}-VPC"
-  azs             = var.azs
-  public_subnets  = var.public_subnets
-  private_subnets = var.private_subnets
+  cidr                = var.cidr
+  name                = "${var.name}-VPC"
+  azs                 = var.azs
+  public_subnets      = var.public_subnets
+  private_subnets     = var.private_subnets
+  public_ip_on_launch = true
 }
 
 # ---------------------------------------
