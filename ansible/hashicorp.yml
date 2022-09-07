@@ -1,0 +1,24 @@
+---
+- name: Install Hashicorp Tools
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install apt gpg key for hashicorp's repository
+      ansible.builtin.apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present
+
+    - name: Add specified repository into sources list
+      ansible.builtin.apt_repository:
+        repo: deb https://apt.releases.hashicorp.com jammy main
+        state: present
+
+    - name: Install Hashicorp Tools
+      ansible.builtin.apt:
+        pkg:
+          - consul 
+          - vault 
+          - nomad
+        state: latest
+        update_cache: true
