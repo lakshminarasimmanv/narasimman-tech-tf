@@ -1,9 +1,9 @@
 {
     "Version": "2012-10-17",
-    "Id": "Policy1653534088582",
+    "Id": "PolicyXXXXXXXXXX",
     "Statement": [
         {
-            "Sid": "Stmt1653534086480",
+            "Sid": "StmtXXXXXXXXXX",
             "Effect": "Allow",
             "Principal": "*",
             "Action": [
