@@ -1,5 +1,5 @@
 source "amazon-ebs" "ubuntu" {
-  ami_description = "Ubuntu AMI with Docker"
+  ami_description = var.ami_description
   ami_name        = "ami-${var.name}-${var.ami_version}"
   instance_type   = var.instance
   region          = var.region
@@ -33,5 +33,9 @@ build {
 
   provisioner "ansible" {
     playbook_file = "../ansible/docker.yml"
+  }
+
+  provisioner "ansible" {
+    playbook_file = "../ansible/hashicorp.yml"
   }
 }

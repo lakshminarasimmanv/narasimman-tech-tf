@@ -52,3 +52,9 @@ variable "ubuntu_version" {
   type        = string
   default     = "jammy-22.04"
 }
+
+variable "ami_description" {
+  description = "Description of the AMI"
+  type        = string
+  default     = ""
+}
