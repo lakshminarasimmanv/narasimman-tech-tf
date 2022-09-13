@@ -3,6 +3,13 @@ data "aws_cloudfront_origin_access_identity" "oai" {
   id = var.cloudfront_oai
 }
 
+data "aws_ami" "custom" {
+  filter {
+    name   = "tag:Name"
+    values = ["DNCV AMI"]
+  }
+}
+
 # ---------------------------------------
 ## Random pet name generator
 resource "random_pet" "name" {
@@ -160,7 +167,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 # ---------------------------------------
 # EC2 and Elastic IP Configuration
 resource "aws_instance" "ghost" {
-  ami           = var.ami_id
+  ami           = data.aws_ami.custom # var.ami_id
   instance_type = var.instance_type
   key_name      = var.instance_key
 
