@@ -167,7 +167,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 # ---------------------------------------
 # EC2 and Elastic IP Configuration
 resource "aws_instance" "ghost" {
-  ami           = data.aws_ami.custom # var.ami_id
+  ami           = data.aws_ami.custom.id # var.ami_id
   instance_type = var.instance_type
   key_name      = var.instance_key
 
@@ -176,12 +176,12 @@ resource "aws_instance" "ghost" {
     "${module.vpc.sg_allow_tls}",
     "${module.vpc.sg_allow_http}",
     "${module.vpc.sg_allow_ssh}",
-    "${aws_security_group.allow_nfs.id}"
+    # "${aws_security_group.allow_nfs.id}"
   ]
 
   ebs_block_device {
     device_name = "/dev/sda1"
-    volume_size = "12"
+    volume_size = "10"
     volume_type = "gp2"
   }
 
@@ -279,49 +279,49 @@ resource "aws_eip_association" "eip_assoc" {
 # ---------------------------------------
 ## EFS File System
 
-resource "aws_efs_file_system" "narasimmantech_efs" {
-  availability_zone_name = aws_instance.ghost.availability_zone
-  encrypted              = true
+# resource "aws_efs_file_system" "narasimmantech_efs" {
+#   availability_zone_name = aws_instance.ghost.availability_zone
+#   encrypted              = true
 
-  tags = {
-    Name = "Website Data and Theme"
-  }
-}
+#   tags = {
+#     Name = "Website Data and Theme"
+#   }
+# }
 
-resource "aws_efs_mount_target" "alpha" {
-  depends_on = [
-    aws_efs_file_system.narasimmantech_efs
-  ]
-  file_system_id  = aws_efs_file_system.narasimmantech_efs.id
-  subnet_id       = module.vpc.private_subnets[0]
-  security_groups = ["${aws_security_group.allow_nfs.id}"]
-}
+# resource "aws_efs_mount_target" "alpha" {
+#   depends_on = [
+#     aws_efs_file_system.narasimmantech_efs
+#   ]
+#   file_system_id  = aws_efs_file_system.narasimmantech_efs.id
+#   subnet_id       = module.vpc.private_subnets[0]
+#   security_groups = ["${aws_security_group.allow_nfs.id}"]
+# }
 
 ## EFS Security Group
-resource "aws_security_group" "allow_nfs" {
-  name        = "allow_nfs"
-  description = "Allow EFS inbound traffic"
-  vpc_id      = module.vpc.vpc_id
+# resource "aws_security_group" "allow_nfs" {
+#   name        = "allow_nfs"
+#   description = "Allow EFS inbound traffic"
+#   vpc_id      = module.vpc.vpc_id
 
-  ingress {
-    description = "NFS from EFS"
-    from_port   = 2049
-    to_port     = 2049
-    protocol    = "tcp"
-    cidr_blocks = ["10.1.0.0/16"]
-  }
+#   ingress {
+#     description = "NFS from EFS"
+#     from_port   = 2049
+#     to_port     = 2049
+#     protocol    = "tcp"
+#     cidr_blocks = ["10.1.0.0/16"]
+#   }
 
-  egress {
-    from_port   = 2049
-    to_port     = 2049
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 2049
+#     to_port     = 2049
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    Name = "allow_nfs"
-  }
-}
+#   tags = {
+#     Name = "allow_nfs"
+#   }
+# }
 
 # ---------------------------------------
 ## Remote Statefile Configuration
