@@ -159,7 +159,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 # ---------------------------------------
 # EC2 and Elastic IP Configuration
-resource "aws_instance" "site" {
+resource "aws_instance" "ghost" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.instance_key
@@ -185,7 +185,7 @@ resource "aws_instance" "site" {
 
 ## Elastic IP
 resource "aws_eip" "lb" {
-  instance = aws_instance.site.id
+  instance = aws_instance.ghost.id
   vpc      = true
 
   tags = {
@@ -195,7 +195,7 @@ resource "aws_eip" "lb" {
 }
 
 resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.site.id
+  instance_id   = aws_instance.ghost.id
   allocation_id = aws_eip.lb.id
 }
 
@@ -228,7 +228,7 @@ resource "aws_eip_association" "eip_assoc" {
 ### Target Group Attachment
 # resource "aws_lb_target_group_attachment" "main" {
 #   target_group_arn = aws_lb_target_group.main.arn
-#   target_id        = aws_instance.site.id
+#   target_id        = aws_instance.ghost.id
 #   port             = 80
 # }
 
@@ -273,7 +273,7 @@ resource "aws_eip_association" "eip_assoc" {
 ## EFS File System
 
 resource "aws_efs_file_system" "narasimmantech_efs" {
-  availability_zone_name = aws_instance.site.availability_zone
+  availability_zone_name = aws_instance.ghost.availability_zone
   encrypted              = true
 
   tags = {
