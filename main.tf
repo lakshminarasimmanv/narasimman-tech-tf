@@ -387,23 +387,23 @@ resource "aws_ses_domain_identity" "narasimman-tech-ses-domain-id" {
   domain = var.domain_name
 }
 
-resource "aws_ses_domain_identity_verification" "example_verification" {
+resource "aws_ses_domain_identity_verification" "verification" {
   domain = aws_ses_domain_identity.narasimman-tech-ses-domain-id.id
 
   depends_on = [cloudflare_record.narasimman-tech-record]
 }
 
-resource "aws_ses_domain_identity" "example" {
+resource "aws_ses_domain_identity" "domain_name" {
   domain = var.domain_name
 }
 
-resource "aws_ses_domain_dkim" "example" {
-  domain = aws_ses_domain_identity.example.domain
+resource "aws_ses_domain_dkim" "domain_name_dkim" {
+  domain = aws_ses_domain_identity.domain_name.domain
 }
 
-resource "aws_ses_domain_mail_from" "example" {
-  domain           = aws_ses_domain_identity.example.domain
-  mail_from_domain = "mail.${aws_ses_domain_identity.example.domain}"
+resource "aws_ses_domain_mail_from" "domain_name_from" {
+  domain           = aws_ses_domain_identity.domain_name.domain
+  mail_from_domain = "mail.${aws_ses_domain_identity.domain_name.domain}"
 }
 
 # ---------------------------------------
@@ -456,15 +456,15 @@ resource "cloudflare_record" "narasimman-tech-record" {
 resource "cloudflare_record" "narasimman-tech-record-2" {
   count   = 3
   zone_id = var.cloudflare_zone_id
-  name    = "${element(aws_ses_domain_dkim.example.dkim_tokens, count.index)}._domainkey"
-  value   = "${element(aws_ses_domain_dkim.example.dkim_tokens, count.index)}.dkim.amazonses.com"
+  name    = "${element(aws_ses_domain_dkim.domain_name_dkim.dkim_tokens, count.index)}._domainkey"
+  value   = "${element(aws_ses_domain_dkim.domain_name_dkim.dkim_tokens, count.index)}.dkim.amazonses.com"
   type    = "CNAME"
   ttl     = "600"
 }
 
 resource "cloudflare_record" "narasimman-tech-record-3" {
   zone_id  = var.cloudflare_zone_id
-  name     = aws_ses_domain_mail_from.example.mail_from_domain
+  name     = aws_ses_domain_mail_from.domain_name_from.mail_from_domain
   value    = "feedback-smtp.us-east-1.amazonses.com"
   priority = "10"
   type     = "MX"
@@ -473,7 +473,7 @@ resource "cloudflare_record" "narasimman-tech-record-3" {
 
 resource "cloudflare_record" "narasimman-tech-record-4" {
   zone_id = var.cloudflare_zone_id
-  name    = aws_ses_domain_mail_from.example.mail_from_domain
+  name    = aws_ses_domain_mail_from.domain_name_from.mail_from_domain
   value   = "v=spf1 include:amazonses.com -all"
   type    = "TXT"
   ttl     = "600"
