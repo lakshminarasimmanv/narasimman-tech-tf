@@ -44,3 +44,5 @@ remote_state.tf
 
 # Others
 ec2-demo.tf
+
+vault/
