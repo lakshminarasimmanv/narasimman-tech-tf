@@ -77,6 +77,7 @@ resource "aws_db_instance" "rds_mysql_db" {
   vpc_security_group_ids   = [module.vpc.sg_allow_rds_mysql]
   availability_zone        = var.azs[0]
   backup_retention_period  = 7
+  multi_az                 = false
   backup_window            = "06:30-07:00"
   maintenance_window       = "Sun:05:00-Sun:05:30"
 
