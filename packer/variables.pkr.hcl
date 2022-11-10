@@ -19,7 +19,7 @@ variable "build_name" {
 variable "subnet" {
   description = "ID of the subnet"
   type        = string
-  default     = "subnet-07e3e17b1da8cab2d"
+  default     = ""
 }
 
 variable "instance" {
