@@ -1,4 +1,4 @@
-# Narasimman Tech - Terraform Configuration
+# Narasimman Tech - Infrastructure Configuration
 
 ## Description
 
