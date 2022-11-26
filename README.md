@@ -6,4 +6,4 @@ This is the code repository for [Narasimman Tech](https://narasimmantech.com), m
 
 The website is provisioned using [Terraform](https://www.terraform.io/) and the DNS is managed by [Cloudflare](https://www.cloudflare.com/).
 
-Feel free to check out the code and use it to build your own website!
+Feel free to modify the code and use it to host your own infrastructure for your website!
